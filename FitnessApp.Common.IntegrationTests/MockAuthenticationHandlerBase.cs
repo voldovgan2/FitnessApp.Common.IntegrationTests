@@ -23,5 +23,8 @@ public abstract class MockAuthenticationHandlerBase(
         return Task.FromResult(result);
     }
 
-    protected abstract List<Claim> GetClaimsByRequest(string path);
+    protected virtual List<Claim> GetClaimsByRequest(string path)
+    {
+        return [];
+    }
 }
