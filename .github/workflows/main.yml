@@ -54,4 +54,4 @@ jobs:
       run: dotnet pack FitnessApp.Common.IntegrationTests/FitnessApp.Common.IntegrationTests.csproj -o:package /p:PackageVersion='${{ steps.gitversion.outputs.SemVer }}' -c Release
     
     - name: Push generated package to GitHub registry
-      run: dotnet nuget push ./package/*.nupkg  --source https://nuget.pkg.github.com/voldovgan2/index.json   --api-key ${{ github.token }}
+      run: dotnet nuget push ./package/*.nupkg  --source https://nuget.pkg.github.com/voldovgan2/index.json   --api-key ${{ secrets.NUGET_PACKAGE_TOKEN }}
