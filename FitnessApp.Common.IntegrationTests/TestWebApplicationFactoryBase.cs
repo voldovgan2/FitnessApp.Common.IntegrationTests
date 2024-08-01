@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
 
 namespace FitnessApp.Common.IntegrationTests;
 
@@ -36,5 +37,12 @@ public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : W
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             })
             .UseEnvironment("Development");
+    }
+
+    public HttpClient CreateHttpClient()
+    {
+        var httpClient = CreateClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme: MockConstants.Scheme);
+        return httpClient;
     }
 }
