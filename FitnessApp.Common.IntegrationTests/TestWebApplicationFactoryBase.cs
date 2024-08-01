@@ -1,5 +1,6 @@
 ﻿using FitnessApp.Common.ServiceBus.Nats.Services;
 using FitnessApp.Common.Vault;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -11,14 +12,19 @@ using Microsoft.Extensions.Options;
 
 namespace FitnessApp.Common.IntegrationTests;
 
-public class TestWebApplicationFactoryBase<T> : WebApplicationFactory<T>
-    where T : class
+public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : WebApplicationFactory<TProgram>
+    where TProgram : class
+    where TAuthenticationHandler: MockAuthenticationHandlerBase
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder
             .ConfigureTestServices(services =>
             {
+                services
+                    .AddAuthentication(defaultScheme: MockConstants.Scheme)
+                    .AddScheme<AuthenticationSchemeOptions, TAuthenticationHandler>(MockConstants.Scheme, options => { });
+
                 services.RemoveAll<IVaultService>();
                 services.AddSingleton<IVaultService, MockVaultService>();
 
