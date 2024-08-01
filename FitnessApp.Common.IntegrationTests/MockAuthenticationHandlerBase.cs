@@ -6,7 +6,7 @@ using System.Text.Encodings.Web;
 
 namespace FitnessApp.Common.IntegrationTests;
 
-public abstract class MockAuthenticationHandler(
+public abstract class MockAuthenticationHandlerBase(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder)
