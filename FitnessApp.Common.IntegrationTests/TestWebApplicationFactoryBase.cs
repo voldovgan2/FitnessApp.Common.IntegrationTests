@@ -54,6 +54,7 @@ public class TestAbstractWebApplicationFactoryBase<
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        base.ConfigureWebHost(builder);
         builder
             .ConfigureTestServices(services =>
             {
