@@ -1,26 +1,40 @@
-﻿using FitnessApp.Common.Abstractions.Db.Configuration;
-using FitnessApp.Common.Abstractions.Db.DbContext;
-using FitnessApp.Common.Abstractions.Db.Entities.Generic;
-using Microsoft.Extensions.Options;
+﻿using FitnessApp.Common.Abstractions.Db;
 using Mongo2Go;
 using MongoDB.Driver;
 
 namespace FitnessApp.Common.IntegrationTests.Fixtures;
 public abstract class MongoDbFixtureBase<TEntity> : IDisposable
-    where TEntity : IGenericEntity
+    where TEntity : IWithUserIdEntity
 {
     private readonly MongoDbRunner _runner;
     public MongoClient Client { get; }
 
-    protected MongoDbFixtureBase(MongoDbSettings mongoDbSettings)
+    protected MongoDbFixtureBase()
     {
         _runner = MongoDbRunner.Start();
         Client = new MongoClient(_runner.ConnectionString);
-        var dbContext = new DbContext<TEntity>(Client, Options.Create(mongoDbSettings));
-        CreateMockData(dbContext).GetAwaiter().GetResult();
     }
 
-    protected abstract Task CreateMockData(DbContext<TEntity> dbContext);
+    public async Task SeedData(
+        string databaseName,
+        string collecttionName,
+        string[] ids)
+    {
+        var dbContext = new DbContext<TEntity>(Client, new MongoDbSettings
+        {
+            DatabaseName = databaseName,
+            CollecttionName = collecttionName,
+        });
+        var createdItemsTasks = ids.Select(id => dbContext.CreateItem(CreateEntity(id)));
+        await Task.WhenAll(createdItemsTasks);
+    }
+
+    protected virtual TEntity CreateEntity(string id)
+    {
+        var entity = Activator.CreateInstance<TEntity>();
+        entity.UserId = id;
+        return entity;
+    }
 
     public void Dispose()
     {

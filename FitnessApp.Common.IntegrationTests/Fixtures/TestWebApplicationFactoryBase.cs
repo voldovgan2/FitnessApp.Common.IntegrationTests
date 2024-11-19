@@ -1,5 +1,10 @@
-﻿using FitnessApp.Common.ServiceBus.Nats.Services;
-using FitnessApp.Common.Vault;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using FitnessApp.Common.Abstractions.Db;
+using FitnessApp.Common.Files;
+using FitnessApp.Common.IntegrationTests.Fixtures;
+using FitnessApp.Common.ServiceBus.Nats.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,12 +12,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
-using System.Net.Http.Headers;
-using FitnessApp.Common.Abstractions.Db.Entities.Generic;
 
-namespace FitnessApp.Common.IntegrationTests.Fixtures;
+namespace FitnessApp.Common.Tests.Fixtures;
 
-public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : WebApplicationFactory<TProgram>
+public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> :
+    WebApplicationFactory<TProgram>
     where TProgram : class
     where TAuthenticationHandler : MockAuthenticationHandlerBase
 {
@@ -24,9 +28,6 @@ public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : W
                 services
                     .AddAuthentication(defaultScheme: MockConstants.Scheme)
                     .AddScheme<AuthenticationSchemeOptions, TAuthenticationHandler>(MockConstants.Scheme, options => { });
-
-                services.RemoveAll<IVaultService>();
-                services.AddSingleton<IVaultService, MockVaultService>();
 
                 services.RemoveAll<IServiceBus>();
                 services.AddSingleton<IServiceBus, MockServiceBus>();
@@ -42,15 +43,19 @@ public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : W
     }
 }
 
-public class TestAbstractWebApplicationFactoryBase<
+public class TestGenericWebApplicationFactoryBase<
     TProgram,
     TAuthenticationHandler,
     TEntity
-    >(MongoDbFixtureBase<TEntity> fixture) :
+    >(
+        MongoDbFixtureBase<TEntity> fixture,
+        string databaseName,
+        string collecttionName,
+        string[] ids) :
     TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler>
     where TProgram : class
     where TAuthenticationHandler : MockAuthenticationHandlerBase
-    where TEntity : IGenericEntity
+    where TEntity : IWithUserIdEntity
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -59,7 +64,38 @@ public class TestAbstractWebApplicationFactoryBase<
             .ConfigureTestServices(services =>
             {
                 services.RemoveAll<IMongoClient>();
-                services.AddSingleton<IMongoClient>((_) => fixture.Client);
+                services.AddTransient<IMongoClient, MongoClient>((_) => fixture.Client);
+            });
+        fixture.SeedData(databaseName, collecttionName, ids).GetAwaiter().GetResult();
+    }
+}
+
+public class TestGenericFileAggregatorWebApplicationFactoryBase<
+    TProgram,
+    TAuthenticationHandler,
+    TEntity
+    >(
+        MongoDbFixtureBase<TEntity> fixture,
+        string databaseName,
+        string collecttionName,
+        string[] ids) :
+    TestGenericWebApplicationFactoryBase<TProgram, TAuthenticationHandler, TEntity>(
+        fixture,
+        databaseName,
+        collecttionName,
+        ids)
+    where TProgram : class
+    where TAuthenticationHandler : MockAuthenticationHandlerBase
+    where TEntity : IWithUserIdEntity
+{
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        base.ConfigureWebHost(builder);
+        builder
+            .ConfigureTestServices(services =>
+            {
+                services.RemoveAll<IFilesService>();
+                services.AddSingleton<IFilesService, MockFilesService>();
             });
     }
 }

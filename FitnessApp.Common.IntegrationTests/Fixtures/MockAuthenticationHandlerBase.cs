@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Claims;
+using System.Text.Encodings.Web;
+using FitnessApp.Common.Tests.Fixtures;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
@@ -14,7 +15,7 @@ public abstract class MockAuthenticationHandlerBase(
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var claims = GetClaimsByRequest(Request.Path);
+        List<Claim> claims = [.. GetClaimsByRequest(Request.Path)];
         claims.Add(new Claim(ClaimTypes.NameIdentifier, MockConstants.SvTest));
         var identity = new ClaimsIdentity(claims, MockConstants.SvTest);
         var principal = new ClaimsPrincipal(identity);
@@ -23,7 +24,7 @@ public abstract class MockAuthenticationHandlerBase(
         return Task.FromResult(result);
     }
 
-    protected virtual List<Claim> GetClaimsByRequest(string path)
+    protected virtual Claim[] GetClaimsByRequest(string path)
     {
         return [];
     }
