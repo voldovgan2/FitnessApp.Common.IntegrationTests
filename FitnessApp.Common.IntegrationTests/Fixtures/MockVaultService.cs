@@ -1,7 +1,7 @@
 ﻿using FitnessApp.Common.Vault;
 using VaultSharp;
 
-namespace FitnessApp.Common.IntegrationTests;
+namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
 public class MockVaultService : IVaultService
 {

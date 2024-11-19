@@ -1,4 +1,4 @@
-﻿namespace FitnessApp.Common.IntegrationTests;
+﻿namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
 public static class MockConstants
 {

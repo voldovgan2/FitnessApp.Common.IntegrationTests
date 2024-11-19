@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
-namespace FitnessApp.Common.IntegrationTests;
+namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
 public abstract class MockAuthenticationHandlerBase(
     IOptionsMonitor<AuthenticationSchemeOptions> options,

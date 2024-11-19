@@ -10,11 +10,11 @@ using MongoDB.Driver;
 using System.Net.Http.Headers;
 using FitnessApp.Common.Abstractions.Db.Entities.Generic;
 
-namespace FitnessApp.Common.IntegrationTests;
+namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
 public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : WebApplicationFactory<TProgram>
     where TProgram : class
-    where TAuthenticationHandler: MockAuthenticationHandlerBase
+    where TAuthenticationHandler : MockAuthenticationHandlerBase
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -29,7 +29,7 @@ public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> : W
                 services.AddSingleton<IVaultService, MockVaultService>();
 
                 services.RemoveAll<IServiceBus>();
-                services.AddSingleton<IServiceBus, MockServiceBus>();                
+                services.AddSingleton<IServiceBus, MockServiceBus>();
             })
             .UseEnvironment("Development");
     }

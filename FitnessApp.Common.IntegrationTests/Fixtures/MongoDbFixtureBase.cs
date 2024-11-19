@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Mongo2Go;
 using MongoDB.Driver;
 
-namespace FitnessApp.Common.IntegrationTests;
+namespace FitnessApp.Common.IntegrationTests.Fixtures;
 public abstract class MongoDbFixtureBase<TEntity> : IDisposable
     where TEntity : IGenericEntity
 {
@@ -15,7 +15,7 @@ public abstract class MongoDbFixtureBase<TEntity> : IDisposable
     protected MongoDbFixtureBase(MongoDbSettings mongoDbSettings)
     {
         _runner = MongoDbRunner.Start();
-        Client = new MongoClient(_runner.ConnectionString);        
+        Client = new MongoClient(_runner.ConnectionString);
         var dbContext = new DbContext<TEntity>(Client, Options.Create(mongoDbSettings));
         CreateMockData(dbContext).GetAwaiter().GetResult();
     }
