@@ -1,9 +1,6 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
 using FitnessApp.Common.Abstractions.Db;
 using FitnessApp.Common.Files;
-using FitnessApp.Common.IntegrationTests.Fixtures;
 using FitnessApp.Common.ServiceBus.Nats.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 
-namespace FitnessApp.Common.Tests.Fixtures;
+namespace FitnessApp.Common.IntegrationTests.Fixtures;
 
 public class TestWebApplicationFactoryBase<TProgram, TAuthenticationHandler> :
     WebApplicationFactory<TProgram>
