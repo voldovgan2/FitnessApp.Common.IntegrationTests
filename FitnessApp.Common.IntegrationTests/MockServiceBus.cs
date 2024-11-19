@@ -1,8 +1,7 @@
-﻿using System;
-using FitnessApp.Common.ServiceBus.Nats.Services;
+﻿using FitnessApp.Common.ServiceBus.Nats.Services;
 using NATS.Client;
 
-namespace FitnessApp.Common.Tests.Fixtures;
+namespace FitnessApp.Common.IntegrationTests;
 
 public class MockServiceBus : IServiceBus
 {
